@@ -71,7 +71,7 @@ def hex_to_pixel(q, r, size=1):
 
 def draw_hex(ax, x, y, size, color, label=None):
     """Draw a single hexagon"""
-    angles = np.linspace(0, 2 * np.pi, 7)
+    angles = np.radians(np.array([0 + i * 60 for i in range(6)] + [0]))
     xs = x + size * np.cos(angles)
     ys = y + size * np.sin(angles)
     ax.fill(xs, ys, color=color, edgecolor="black")
