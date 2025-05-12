@@ -4,6 +4,18 @@ import matplotlib.pyplot as plt
 import numpy as np
 from catan.board import hex_to_pixel, draw_hex, RESOURCE_COLORS
 
+#Ports
+HARBORS = [
+    {"nodes": (68, 69), "type": "3:1"},
+    {"nodes": (35, 36), "type": "wool"},
+    {"nodes": (30, 31), "type": "ore"},
+    {"nodes": (24, 25), "type": "3:1"},
+    {"nodes": (45, 46), "type": "grain"},
+    {"nodes": (51, 52), "type": "3:1"},
+    {"nodes": (106, 107), "type": "lumber"},
+    {"nodes": (93, 94), "type": "brick"},
+    {"nodes": (81, 82), "type": "3:1"},
+]
 
 # === Intersections ===
 INTERSECTION_POSITIONS = [
@@ -48,6 +60,8 @@ class BoardGraph:
         self.next_node_id = 0
         self.hex_size = hex_size
         self._generate_from_board(board)
+        self.harbors = HARBORS
+        self._assign_harbors()
 
     def _generate_from_board(self, board):
         for tile in board.tiles:
@@ -96,6 +110,13 @@ class BoardGraph:
 
     def get_available_settlement_spots(self):
         return [n for n, d in self.graph.nodes(data=True) if d['building'] is None]
+    
+    def _assign_harbors(self):
+        for harbor in self.harbors:
+            for node in harbor["nodes"]:
+                if node in self.graph.nodes:
+                    self.graph.nodes[node]["harbor"] = harbor["type"]
+
 
     
 
@@ -117,6 +138,9 @@ def render_board_with_graph(board, board_graph):
         x, y = data['x'], data['y']
         ax.plot(x, y, 'o', color='black', markersize=5)
         ax.text(x, y + 0.2, str(node_id), ha='center', fontsize=6, color='blue')
+
+        if "harbor" in data:
+            ax.text(x, y - 0.2, f"{data['harbor']}", ha="center", fontsize=8, color="darkgreen")
 
     # === Draw road edges ===
     for a, b in board_graph.graph.edges:
